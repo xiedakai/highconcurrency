@@ -6,10 +6,14 @@ public class JMMInAction {
 
    static class MyData{
 
-        private  int num = 0;
+        private volatile int num = 0;
 
         public void addTo60(){
             this.num = 60;
+        }
+
+        public void plusPlus(){
+            this.num++;
         }
 
     }
@@ -17,7 +21,23 @@ public class JMMInAction {
 
     public static void testYuanZiXing(){
        //volatile 不保证原子性
+        MyData myData = new MyData();
 
+        for (int i = 0; i < 20; i++) {
+            new Thread(() -> {
+                for(int j = 0; j < 1000; j++){
+                    myData.plusPlus();
+                }
+            }, String.valueOf(i)).start();
+        }
+        while (Thread.activeCount()>2){
+            /**
+             * jvm默认有GC线程 + 主线程
+             * 当还有上面的自定义线程未结束时，让出当前线程。
+             */
+            Thread.currentThread().yield();
+        }
+        System.out.println("num = "+myData.num);
     }
 
     public static void testKeJianXing(){
@@ -44,7 +64,8 @@ public class JMMInAction {
 
 
     public static void main(String[] args) {
-        testKeJianXing();
+        //testKeJianXing();
+        testYuanZiXing();
     }
 
 }

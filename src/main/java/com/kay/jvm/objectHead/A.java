@@ -1,4 +1,4 @@
-package com.kay.thread.synch.objectHead;
+package com.kay.jvm.objectHead;
 
 import org.openjdk.jol.info.ClassLayout;
 
